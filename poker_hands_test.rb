@@ -1,10 +1,15 @@
-describe "poker hands" do
-  require_relative 'card'
-  require_relative 'hand_builder'
+require_relative 'card'
+require_relative 'hand_builder'
 
+describe "poker hand comparisons" do
   include HandBuilder
 
   let(:hearts) { [:h] * 5 }
+  let(:clubs) { [:c] * 5 }
+  let(:diamonds) { [:d] * 5 }
+  let(:spades) { [:s] * 5 }
+  let(:mixed_suits) { %i(h d s c h) }
+
   let(:straight_flush) do
     build_hand(%w(ten jack queen king ace).zip(hearts).map{ |x, y| Card.new(x, y) } )
   end
@@ -18,7 +23,7 @@ describe "poker hands" do
     build_hand([2, 2, 4, 4, 4].zip(hearts).map{ |x, y| Card.new(x, y) } )
   end
 
-  it 'checks equality' do
+  it 'checks equality on full-houses' do
     expect(full_house).to eq full_house_1
   end
 
