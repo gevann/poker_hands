@@ -1,16 +1,17 @@
 class BaseHand
   include Comparable
 
-  attr_reader :cards
+  HAND_ORDER = %w(StraightFlush FourOfAKind FullHouse Flush Straight ThreeOfAKind TwoPair TwoOfAKind HighCard).freeze
+  attr_reader :cards, :rank
 
   def initialize(cs)
     @cards = cs
   end
 
   def <=>(anOther)
-    if self.class > anOther.class
+    if self.rank > anOther.rank
       1
-    elsif self.class < anOther.class
+    elsif self.rank < anOther.rank
       -1
     else
       tie_breaker(anOther)
@@ -28,31 +29,18 @@ class BaseHand
     end
       0
   end
+
+  def rank
+    -1 * HAND_ORDER.index(self.class.name)
+  end
 end
 
-class StraightFlush < BaseHand
-end
-
-class FourOfAKind < StraightFlush
-end
-
-class FullHouse < FourOfAKind
-end
-
-class Flush < FullHouse
-end
-
-class Straight < Flush
-end
-
-class ThreeOfAKind < Straight
-end
-
-class TwoPair < ThreeOfAKind
-end
-
-class TwoOfAKind < TwoPair
-end
-
-class HighCard < TwoOfAKind
-end
+class StraightFlush < BaseHand; end
+class FourOfAKind < BaseHand; end
+class FullHouse < BaseHand; end
+class Flush < BaseHand; end
+class Straight < BaseHand; end
+class ThreeOfAKind < BaseHand; end
+class TwoPair < BaseHand; end
+class TwoOfAKind < BaseHand; end
+class HighCard < BaseHand; end
