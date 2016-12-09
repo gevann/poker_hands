@@ -1,16 +1,32 @@
 require_relative 'card'
-require_relative 'poker_hands'
+require_relative 'poker_hand'
 
-describe "poker hand comparisons" do
+describe PokerHand do
   def hand(vals, suits)
-    BaseHand.new( vals.zip(suits).map { |x, y| Card.new(x, y) } )
+    PokerHand.new( vals.zip(suits).map { |x, y| Card.new(x, y) } )
   end
 
-  let(:hearts) { [:h] * 5 }
+  def mixed_suits(num: 5)
+    mix = []
+    while mix.count < num do
+      mix << case ( mix.count % 4 )
+        when 0
+          :h
+        when 1
+          :d
+        when 2
+          :s
+        when 3
+          :c
+        end
+    end
+    mix
+  end
+
   let(:clubs) { [:c] * 5 }
   let(:diamonds) { [:d] * 5 }
   let(:spades) { [:s] * 5 }
-  let(:mixed_suits) { %i(h d s c h) }
+  let(:hearts) { [:h] * 5 }
 
   let(:straight_flush) { hand(%w(ten jack queen king ace), hearts) }
   let(:straight_flush_1) { hand(%w(ten jack queen king ace), hearts) }
@@ -56,115 +72,131 @@ describe "poker hand comparisons" do
   let(:high_card_2) { hand(%i(ace two four six nine), mixed_suits) }
   let(:high_card_3) { hand(%i(ace two four six seven), mixed_suits) }
 
-  context "comparing with a straight-flush" do
-    subject { straight_flush }
-    it { is_expected.to eq straight_flush_1 }
-    it { is_expected.to be > straight_flush_2 }
-    it { is_expected.to be > full_house }
+  describe "comparing instances" do
+    context "comparing with a straight-flush" do
+      subject { straight_flush }
+      it { is_expected.to eq straight_flush_1 }
+      it { is_expected.to be > straight_flush_2 }
+      it { is_expected.to be > full_house }
 
-    it { is_expected.to be > four_of_a_kind }
-    it { is_expected.to be > full_house }
-    it { is_expected.to be > flush }
-    it { is_expected.to be > straight }
-    it { is_expected.to be > three_of_a_kind }
-    it { is_expected.to be > two_pair }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
+      it { is_expected.to be > four_of_a_kind }
+      it { is_expected.to be > full_house }
+      it { is_expected.to be > flush }
+      it { is_expected.to be > straight }
+      it { is_expected.to be > three_of_a_kind }
+      it { is_expected.to be > two_pair }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a four of a kind" do
+      subject { four_of_a_kind }
+
+      it { is_expected.to eq four_of_a_kind_1 }
+      it { is_expected.to be < four_of_a_kind_2 }
+      it { is_expected.to be < four_of_a_kind_3 }
+
+      it { is_expected.to be > full_house }
+      it { is_expected.to be > flush }
+      it { is_expected.to be > straight }
+      it { is_expected.to be > three_of_a_kind }
+      it { is_expected.to be > two_pair }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a full-house" do
+      subject { full_house }
+
+      it { is_expected.to eq full_house_1 }
+      it { is_expected.to be < full_house_2 }
+      it { is_expected.to be < full_house_4 }
+      it { is_expected.to be < full_house_4 }
+
+      it { is_expected.to be > flush }
+      it { is_expected.to be > straight }
+      it { is_expected.to be > three_of_a_kind }
+      it { is_expected.to be > two_pair }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a flush" do
+      subject { flush }
+
+      it { is_expected.to eq flush_1 }
+      it { is_expected.to be < flush_2 }
+      it { is_expected.to be > flush_3 }
+
+      it { is_expected.to be > straight }
+      it { is_expected.to be > three_of_a_kind }
+      it { is_expected.to be > two_pair }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a straight" do
+      subject { straight }
+
+      it { is_expected.to eq straight_1 }
+      it { is_expected.to be < straight_2 }
+      it { is_expected.to be > straight_3 }
+
+      it { is_expected.to be > three_of_a_kind }
+      it { is_expected.to be > two_pair }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a three_of_a_kind" do
+      subject { three_of_a_kind }
+
+      it { is_expected.to eq three_of_a_kind_1 }
+      it { is_expected.to be < three_of_a_kind_2 }
+      it { is_expected.to be > three_of_a_kind_3 }
+      it { is_expected.to be > two_pair }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a two_pair" do
+      subject { two_pair }
+
+      it { is_expected.to eq two_pair_1 }
+      it { is_expected.to be < two_pair_2 }
+      it { is_expected.to be > two_pair_3 }
+      it { is_expected.to be > pair }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a pair" do
+      subject { pair }
+      it { is_expected.to eq pair_1 }
+      it { is_expected.to be < pair_2 }
+      it { is_expected.to be > pair_3 }
+      it { is_expected.to be > high_card }
+    end
+
+    context "comparing with a high_card" do
+      subject { high_card }
+      it { is_expected.to eq high_card_1 }
+      it { is_expected.to be < high_card_2 }
+      it { is_expected.to be > high_card_3 }
+    end
   end
 
-  context "comparing with a four of a kind" do
-    subject { four_of_a_kind }
+  context "with 7 cards" do
+    let(:seven_card_hand) { hand(%w(two four four four nine nine nine), mixed_suits(num: 7) ) }
+    let(:eight_card_hand) { hand(%w(two two two two three four five six), mixed_suits(num: 8) ) }
 
-    it { is_expected.to eq four_of_a_kind_1 }
-    it { is_expected.to be < four_of_a_kind_2 }
-    it { is_expected.to be < four_of_a_kind_3 }
+    it 'chooses the full house over the three of a kind' do
+      expect(seven_card_hand.type).to eq 'full_house'
+    end
 
-    it { is_expected.to be > full_house }
-    it { is_expected.to be > flush }
-    it { is_expected.to be > straight }
-    it { is_expected.to be > three_of_a_kind }
-    it { is_expected.to be > two_pair }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
-  end
+    it 'chooses the four of a kind over the straight' do
+      expect(eight_card_hand.type).to eq 'four_of_a_kind'
+    end
 
-  context "comparing with a full-house" do
-    subject { full_house }
-
-    it { is_expected.to eq full_house_1 }
-    it { is_expected.to be < full_house_2 }
-    it { is_expected.to be < full_house_4 }
-    it { is_expected.to be < full_house_4 }
-
-    it { is_expected.to be > flush }
-    it { is_expected.to be > straight }
-    it { is_expected.to be > three_of_a_kind }
-    it { is_expected.to be > two_pair }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
-  end
-
-  context "comparing with a flush" do
-    subject { flush }
-
-    it { is_expected.to eq flush_1 }
-    it { is_expected.to be < flush_2 }
-    it { is_expected.to be > flush_3 }
-
-    it { is_expected.to be > straight }
-    it { is_expected.to be > three_of_a_kind }
-    it { is_expected.to be > two_pair }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
-  end
-
-  context "comparing with a straight" do
-    subject { straight }
-
-    it { is_expected.to eq straight_1 }
-    it { is_expected.to be < straight_2 }
-    it { is_expected.to be > straight_3 }
-
-    it { is_expected.to be > three_of_a_kind }
-    it { is_expected.to be > two_pair }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
-  end
-
-  context "comparing with a three_of_a_kind" do
-    subject { three_of_a_kind }
-
-    it { is_expected.to eq three_of_a_kind_1 }
-    it { is_expected.to be < three_of_a_kind_2 }
-    it { is_expected.to be > three_of_a_kind_3 }
-    it { is_expected.to be > two_pair }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
-  end
-
-  context "comparing with a two_pair" do
-    subject { two_pair }
-
-    it { is_expected.to eq two_pair_1 }
-    it { is_expected.to be < two_pair_2 }
-    it { is_expected.to be > two_pair_3 }
-    it { is_expected.to be > pair }
-    it { is_expected.to be > high_card }
-  end
-
-  context "comparing with a pair" do
-    subject { pair }
-    it { is_expected.to eq pair_1 }
-    it { is_expected.to be < pair_2 }
-    it { is_expected.to be > pair_3 }
-    it { is_expected.to be > high_card }
-  end
-
-  context "comparing with a high_card" do
-    subject { high_card }
-    it { is_expected.to eq high_card_1 }
-    it { is_expected.to be < high_card_2 }
-    it { is_expected.to be > high_card_3 }
   end
 
 end
