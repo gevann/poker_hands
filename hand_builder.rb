@@ -52,14 +52,14 @@ module HandBuilder
   # param c [Array <Card>] the array of cards to search in.
   # return [Boolean] whether or not the array has x many matching cards (by value)
   def x_of_a_kind?(x, c)
-    c.group_by(&:value).map { |value, grouping| grouping.count == x }.any?
+    c.group_by(&:value).map { |value, grouping| grouping.count >= x }.any?
   end
 
   # param x [Integer] the number of matching cards, by value, to look for.
   # param c [Array <Card>] the array of cards to search in.
   # return [Integer], [Array <Card>] the value of the x_of_kind, and the cards it consists of.
   def x_of_a_kind(x, c)
-    c.group_by(&:value).select { |value, grouping| grouping.count == x }.flatten.last
+    c.group_by(&:value).select { |value, grouping| grouping.count >= x }.flatten.last
   end
 
   def pair_excluding?(exclusion, cards)

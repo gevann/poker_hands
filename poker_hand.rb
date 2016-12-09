@@ -1,6 +1,6 @@
 require_relative 'hand_builder'
 
-class BaseHand
+class PokerHand
   include Comparable
   include HandBuilder
 
@@ -22,20 +22,16 @@ class BaseHand
     elsif self.rank < anOther.rank
       -1
     else
-      tie_breaker(anOther)
+      self.grouped.zip(anOther.grouped).map do |x, y|
+        return 1 if x > y
+        return -1 if x < y
+      end
+      0
     end
   end
 
   def grouped
     self.cards.group_by(&:value).sort_by { |k, v| -v.count }.flatten.reject { |x| x.is_a? Card }
-  end
-
-  def tie_breaker(anOther)
-    self.grouped.zip(anOther.grouped).map do |x, y|
-      return 1 if x > y
-      return -1 if x < y
-    end
-      0
   end
 
   def rank
