@@ -9,21 +9,7 @@ module HandBuilder
     end
 
     klass = Object.const_get(constantize(set_hand_type(cards)))
-
-    case klass.name
-    when "FullHouse"
-      major = three_of_a_kind(cards).first.value
-      minor = pair_excluding(three_of_a_kind(cards), cards).first.value
-      klass.new(cards, major, minor)
-    when "TwoPair"
-      major = two_of_a_kind(cards).first.value
-      minor = pair_excluding(two_of_a_kind(cards), cards).first.value
-      klass.new(cards, major, minor)
-    when "TwoOfAKind"
-      klass.new(cards, two_of_a_kind(cards).first.value)
-    else
-      klass.new(cards)
-    end
+    klass.new(cards)
   end
 
   private
@@ -58,27 +44,19 @@ module HandBuilder
   end
 
   def full_house? cards
-    three_of_a_kind?(cards) && pair_excluding?(three_of_a_kind(cards), cards)
+    three_of_a_kind?(cards) && pair_excluding?(x_of_a_kind(3, cards), cards)
   end
 
   def three_of_a_kind? cards
     x_of_a_kind?(3, cards)
   end
 
-  def three_of_a_kind cards
-    x_of_a_kind(3, cards)
-  end
-
   def two_of_a_kind? cards
     x_of_a_kind?(2, cards)
   end
 
-  def two_of_a_kind cards
-    x_of_a_kind(2, cards)
-  end
-
   def two_pair? cards
-    two_of_a_kind?(cards) && pair_excluding?(two_of_a_kind(cards), cards)
+    two_of_a_kind?(cards) && pair_excluding?(x_of_a_kind(2, cards), cards)
   end
 
   # param x [Integer] the number of matching cards, by value, to look for.
