@@ -1,18 +1,7 @@
 module HandBuilder
-  require_relative 'poker_hands'
+  private
 
   POKER_HANDS = %w(straight_flush four_of_a_kind full_house flush straight three_of_a_kind two_pair two_of_a_kind).freeze
-
-  def build_hand(cards)
-    cards.each do |card|
-      raise ArgumentError.new("#{card.inspect} is not a Card object") unless card.is_a? Card
-    end
-
-    klass = Object.const_get(constantize(set_hand_type(cards)))
-    klass.new(cards)
-  end
-
-  private
 
   def set_hand_type(cards)
     if type = POKER_HANDS.detect { |hand_type| self.send(hand_type + "?", cards) }

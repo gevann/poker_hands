@@ -1,11 +1,9 @@
 require_relative 'card'
-require_relative 'hand_builder'
+require_relative 'poker_hands'
 
 describe "poker hand comparisons" do
-  include HandBuilder
-
   def hand(vals, suits)
-    build_hand( vals.zip(suits).map { |x, y| Card.new(x, y) } )
+    BaseHand.new( vals.zip(suits).map { |x, y| Card.new(x, y) } )
   end
 
   let(:hearts) { [:h] * 5 }

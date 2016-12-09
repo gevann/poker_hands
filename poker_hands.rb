@@ -1,11 +1,19 @@
+require_relative 'hand_builder'
+
 class BaseHand
   include Comparable
+  include HandBuilder
 
-  HAND_ORDER = %w(StraightFlush FourOfAKind FullHouse Flush Straight ThreeOfAKind TwoPair TwoOfAKind HighCard).freeze
-  attr_reader :cards, :rank
+  HAND_ORDER = %w(straight_flush four_of_a_kind full_house flush straight three_of_a_kind two_pair two_of_a_kind high_card).freeze
+
+  attr_reader :cards, :rank, :type
 
   def initialize(cs)
+    cs.each do |card|
+      raise ArgumentError.new("#{card.inspect} is not a Card object") unless card.is_a? Card
+    end
     @cards = cs
+    @type = set_hand_type(@cards)
   end
 
   def <=>(anOther)
@@ -31,16 +39,6 @@ class BaseHand
   end
 
   def rank
-    -1 * HAND_ORDER.index(self.class.name)
+    -1 * HAND_ORDER.index(self.type)
   end
 end
-
-class StraightFlush < BaseHand; end
-class FourOfAKind < BaseHand; end
-class FullHouse < BaseHand; end
-class Flush < BaseHand; end
-class Straight < BaseHand; end
-class ThreeOfAKind < BaseHand; end
-class TwoPair < BaseHand; end
-class TwoOfAKind < BaseHand; end
-class HighCard < BaseHand; end
